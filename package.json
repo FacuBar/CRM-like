@@ -1,0 +1,15 @@
+{
+  "name": "crm",
+  "version": "1.0.0",
+  "description": "crm based on services sold and not customers",
+  "main": "./src/app.js",
+  "scripts": {
+    "start": "node ./src/server.js"
+  },
+  "author": "efacubar",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.13"
+  }
+}
