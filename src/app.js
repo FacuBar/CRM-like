@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const hpp = require('hpp');
 const cors = require('cors');
 
+const repairRequestRouter = require('./routes/repairRequestRouter');
 const AppError = require('./utils/appError');
 
 const app = express();
@@ -39,12 +40,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, '/public')));
 
 // Routes
+app.use('/repairs', repairRequestRouter);
+
 app.all('*', (req, _, next) => {
   next(new AppError(`Can't find ${req.originalUrl}`));
 });
 
 // Error handling middleware
-app.use((err, _, res, _) => {
+app.use((err, req, res, next) => {
   console.log(err);
   err.statusCode = err.statusCode || 500;
   if (!err.message) err.message = 'Something went wrong';
