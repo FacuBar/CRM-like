@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const hpp = require('hpp');
 const cors = require('cors');
 
+const AppError = require('./utils/appError');
+
 const app = express();
 
 // Parsing middleware
@@ -30,15 +32,23 @@ app.use(
 );
 
 // Setting view template engine -pug-
-app.use(express.static(path.join(__dirname, '/public')));
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
+// Serve static files
+app.use(express.static(path.join(__dirname, '/public')));
+
 // Routes
 app.all('*', (req, _, next) => {
-  next(new Error(`Can't find ${req.originalUrl}`));
+  next(new AppError(`Can't find ${req.originalUrl}`));
 });
 
 // Error handling middleware
+app.use((err, _, res, _) => {
+  console.log(err);
+  err.statusCode = err.statusCode || 500;
+  if (!err.message) err.message = 'Something went wrong';
+  res.status(statusCode).render('error', { err });
+});
 
 module.exports = app;
