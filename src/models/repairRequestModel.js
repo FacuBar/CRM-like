@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
+const Comment = require('./commentModel');
+const { automatedMessage } = require('../controllers/wspController');
 
 const repairRequestSchema = new mongoose.Schema({
   contactInfo: {
@@ -47,7 +51,7 @@ const repairRequestSchema = new mongoose.Schema({
   comments: [
     {
       type: mongoose.Schema.ObjectId,
-      ref: 'Comment',
+      ref: Comment,
     },
   ],
   statusId: {
@@ -73,6 +77,54 @@ const repairRequestSchema = new mongoose.Schema({
   },
 });
 
-const RepairRequest = mongoose.model('RepairRequest', repairRequestSchema);
+// Midleware
+repairRequestSchema.pre(/^findOne/, function (next) {
+  this.populate('comments');
+  next();
+});
 
-module.exports = RepairRequest;
+const statuses = [
+  'pendiente',
+  'presupuestando',
+  'arreglando',
+  'arreglado',
+  'entregado',
+  'sinArreglar',
+];
+
+const messageIf = ['pendiente', 'arreglando', 'arreglado'];
+
+// sends automatic wsp msg when specified
+repairRequestSchema.pre(
+  'save',
+  { document: true, query: false },
+  function (next) {
+    if (!this.isModified('status')) return next();
+
+    this.statusModifiedAt = Date.now();
+
+    this.statusId = statuses.indexOf(this.status);
+
+    if (messageIf.includes(this.status)) automatedMessage(this);
+
+    next();
+  }
+);
+
+// Plugins
+repairRequestSchema.plugin(mongoosePaginate);
+repairRequestSchema.plugin(AutoIncrement, {
+  inc_field: 'npedido',
+  start_seq: 11450,
+});
+
+// Indexes
+repairRequestSchema.index({
+  modelo: 'text',
+  nserie: 'text',
+  npedido: 'text',
+  'contactInfo.name': 'text',
+  'contactInfo.phone': 'text',
+});
+
+module.exports = mongoose.model('RepairRequest', repairRequestSchema);
