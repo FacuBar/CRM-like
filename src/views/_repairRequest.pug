@@ -1,0 +1,18 @@
+.repairRequest
+  .repairRequest__header 
+    a.repairRequest__author
+      span= repairRequest.contactInfo.name
+
+    .repairRequest__sentAt 
+      span= repairRequest.sentAt.toLocaleDateString('en-GB')
+
+  .repairRequest__content 
+    -let nroserie = '';
+    if repairRequest.nserie
+      -nroserie =  `|| ${repairRequest.nserie}`
+      
+    a(href=`repairs/${repairRequest._id}`)= `${repairRequest.modelo} ${nroserie}`
+    p= repairRequest.text
+  .repairRequest__meta 
+    p#repairStatus.repairRequest__topic= `${repairRequest.status} desde ${repairRequest.statusModifiedAt.toLocaleDateString('en-GB')}`
+    p= `#${repairRequest.npedido}`

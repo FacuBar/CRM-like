@@ -1,0 +1,66 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="shortcut icon" href="/svg/002-toolbox.svg")
+    link(rel="stylesheet" href="/css/crm.css")
+    title= `Base CRM || ${repairRequest.modelo}`
+
+  body 
+    include _header
+
+    main.layout.layout--2
+      .container 
+        div
+          .room 
+            .room__top 
+              .room__topLeft 
+                a(href="/repairs?page=1")
+                  svg(version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32")
+                    title arrow-left 
+                    path(d="M13.723 2.286l-13.723 13.714 13.719 13.714 1.616-1.611-10.96-10.96h27.625v-2.286h-27.625l10.965-10.965-1.616-1.607z")
+                    h3 Volver
+              .room__topRight 
+                button.btn-state
+                  img(src="/svg/001-fast-forward.png")
+                button.btn-remove
+                  img(src="/svg/close.png")
+
+
+            .roomlist 
+              if repairRequest 
+                include _repairRequest
+          div 
+
+            if repairRequest.comments
+              each comment in repairRequest.comments
+                .repairRequest
+                  .repairRequest__content 
+                    p= comment.text
+
+
+              .repairRequest
+                .room__message
+                  form#repairRequestComment
+                    input(name="" placeholder="Write your message here...")
+                      
+        .repairDeatils 
+          h3.repairDeatils__top Contact Info 
+          .repairDeatils__list.scroll
+            .clientDetails
+              p Nombre 
+                span= repairRequest.contactInfo.name
+            .clientDetails
+              p Celular 
+                span= repairRequest.contactInfo.phone 
+            .clientDetails 
+              p Dirección 
+                span= repairRequest.contactInfo.address ? repairRequest.contactInfo.address : ''  
+            .clientDetails
+              p Formulario llenado por:  
+                span= repairRequest.issuedBy
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  //- script(src="/js/comments.js")

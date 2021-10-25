@@ -1,0 +1,73 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="shortcut icon" href="/svg/002-toolbox.svg")
+    link(rel="stylesheet" href="/css/crm.css")
+    title= `CRM || ${query.status? query.status : 'Todos'}`
+
+  body 
+    include _header
+    
+    main.layout.layout--3
+      .container 
+        .status 
+          .status__header 
+            h2 Browse repair requests
+          ul.status__list
+            li
+              a(href="/repairs?page=1") All 
+            li
+              a(href="/repairs?status=pendiente&page=1") Pendientes
+            li
+              a(href="/repairs?status=presupuestando&page=1") Presupuestando
+            li
+              a(href="/repairs?status=arreglando&page=1") Arreglando 
+            li
+              a(href="/repairs?status=arreglado&page=1") Arreglados
+            li
+              a(href="/repairs?status=entregado&page=1") Entregados
+            li
+              a(href="/repairs?status=sinArreglar&page=1") Sin arreglar
+        
+        .roomlist 
+          if repairRequests
+            each repairRequest in repairRequests
+              include _repairRequest
+          
+          .btn-container
+            if currentPage > 1
+              -let path = `/repairs?page=${+currentPage - 1}`
+              -let first = `/repairs?page=1`
+              if query.status 
+                -path += `&status=${query.status}`
+                -first += `&status=${query.status}`
+              else if query.search 
+                -path += `&search=${query.search}`
+                -first += `&search=${query.search}`
+              a.btn--pill(href=first) 
+                p= 'first'
+              a.btn--pill(href=path) 
+                p= '<-'
+
+            .btn--pill 
+              p= currentPage
+
+            if currentPage < totalPages
+              -let path = `/repairs?page=${+currentPage + 1}`
+              -let last = `/repairs?page=${+totalPages}`
+              if query.status 
+                -path += `&status=${query.status}`
+                -last += `&status=${query.status}`
+              else if query.search 
+                -path += `&search=${query.search}`
+                -last += `&search=${query.search}`
+
+              a.btn--pill(href=path)
+                p= '->'
+              a.btn--pill(href=last)
+                p= 'last'
+
+  //- script(src="/js/repairs.js")
