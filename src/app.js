@@ -51,7 +51,7 @@ app.use((err, req, res, next) => {
   console.log(err);
   err.statusCode = err.statusCode || 500;
   if (!err.message) err.message = 'Something went wrong';
-  res.status(statusCode).render('error', { err });
+  res.status(err.statusCode).json(err);
 });
 
 module.exports = app;

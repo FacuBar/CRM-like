@@ -18,8 +18,8 @@ exports.createNew = wrapAsync(async (req, res) => {
     text: req.body.text,
   });
 
-  req.RepairRequest.comments.push(newComment._id);
-  req.RepairRequest.save();
+  req.repairRequest.comments.push(newComment._id);
+  req.repairRequest.save();
 
   if (req.body.text.split(' ')[0] === ':enviar:') {
     sendMsg(req);

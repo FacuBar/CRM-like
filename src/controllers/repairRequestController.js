@@ -1,4 +1,5 @@
 const RepairRequest = require('../models/repairRequestModel');
+const AppError = require('../utils/appError');
 const wrapAsync = require('../utils/wrapAsync');
 
 // '/repairs/:id'
@@ -22,6 +23,13 @@ exports.getAll = wrapAsync(async (req, res) => {
    * @todo
    * replace json response for view rendering.
    */
+  res.status(200).render('crm', {
+    repairRequests: documents.docs,
+    totalPages: documents.pages,
+    currentPage,
+    query: req.query,
+  });
+  /*
   if (documents)
     res.status(200).json({
       status: 'success',
@@ -34,6 +42,7 @@ exports.getAll = wrapAsync(async (req, res) => {
       status: 'fail',
       message: 'Not found',
     });
+  */
 });
 
 exports.createNew = wrapAsync(async (req, res) => {
@@ -72,7 +81,10 @@ exports.findRepairRequest = wrapAsync(async (req, _, next) => {
 });
 
 exports.getOne = wrapAsync(async (req, res) => {
-  res.json(req.repairRequest);
+  // TODO: add error page to non existant rr
+  res.status(200).render('repairRequest', {
+    repairRequest: req.repairRequest,
+  });
 });
 
 exports.modifyStatus = wrapAsync(async (req, res) => {
