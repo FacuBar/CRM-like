@@ -31,16 +31,26 @@ const withSession = async () => {
     withSession();
   });
 
+  client.on('disconnected', async () => {
+    console.log('Wsp session disconnected, reconnecting ...');
+    await client.destroy();
+    withSession();
+  });
+
   await client.initialize();
 };
 
 withSession();
 
 // returns promise
-const sendMessage = (number, text) => {
-  number = `${number}@c.us`;
-  const message = text;
-  return client.sendMessage(number, message);
+const sendMessage = async (number, text) => {
+  try {
+    number = `${number}@c.us`;
+    const message = text;
+    client.sendMessage(number, message);
+  } catch (e) {
+    throw new Error('Mensaje no se pudo enviar');
+  }
 };
 
 exports.sendMsg = async (req) => {
