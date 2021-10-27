@@ -20,6 +20,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.1.0",
+    "express-openid-connect": "^2.5.1",
     "helmet": "^4.6.0",
     "hpp": "^0.2.3",
     "mongoose": "^6.0.11",

@@ -1903,7 +1903,7 @@ commentForm?.addEventListener('submit', async (e) => {
 
   commentForm.children[0].value = '';
 
-  location.reload();
+  setTimeout(location.reload(), 750);
 });
 
 btnState?.addEventListener('click', async (e) => {
@@ -1940,7 +1940,7 @@ btnState?.addEventListener('click', async (e) => {
     text,
   });
 
-  location.reload();
+  setTimeout(location.reload(), 750);
 });
 
 btnRemove?.addEventListener('click', async (e) => {
@@ -1955,7 +1955,7 @@ btnRemove?.addEventListener('click', async (e) => {
     text,
   });
 
-  location.reload();
+  setTimeout(location.reload(), 750);
 });
 
 },{"axios":1}],31:[function(require,module,exports){

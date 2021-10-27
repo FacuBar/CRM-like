@@ -22,10 +22,11 @@ exports.getAll = wrapAsync(async (req, res) => {
 
   res.status(200).render('crm', {
     repairRequests: documents.docs,
-    totalPages: documents.pages,
+    totalPages: documents.totalPages,
     currentPage,
     query: req.query,
   });
+
   /*
   if (documents)
     res.status(200).json({
