@@ -5,6 +5,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const hpp = require('hpp');
 const cors = require('cors');
+const { auth } = require('express-openid-connect');
 
 const repairRequestRouter = require('./routes/repairRequestRouter');
 const AppError = require('./utils/appError');
@@ -32,6 +33,17 @@ app.use(
   })
 );
 
+// auth
+const config = {
+  authRequired: true,
+  auth0Logout: true,
+  secret: process.env.SECRET,
+  baseURL: process.env.BASEURL,
+  clientID: process.env.CLIENTID,
+  issuerBaseURL: process.env.ISSUER,
+};
+app.use(auth(config));
+
 // Setting view template engine -pug-
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -40,7 +52,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, '/public')));
 
 // Routes
+
 app.use('/repairs', repairRequestRouter);
+
+app.use('/', (req, res) => {
+  if (req.oidc.isAuthenticated()) {
+    res.redirect('/repairs');
+  }
+});
 
 app.all('*', (req, _, next) => {
   next(new AppError(`Can't find ${req.originalUrl}`));
