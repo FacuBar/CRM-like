@@ -1094,7 +1094,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this)}).call(this,require('_process'))
-},{"./adapters/http":2,"./adapters/xhr":2,"./core/enhanceError":12,"./helpers/normalizeHeaderName":25,"./utils":29,"_process":31}],17:[function(require,module,exports){
+},{"./adapters/http":2,"./adapters/xhr":2,"./core/enhanceError":12,"./helpers/normalizeHeaderName":25,"./utils":29,"_process":32}],17:[function(require,module,exports){
 module.exports = {
   "version": "0.23.0"
 };
@@ -1887,78 +1887,65 @@ module.exports = {
 };
 
 },{"./helpers/bind":18}],30:[function(require,module,exports){
+const hideAlert = () => {
+  const el = document.querySelector('.alert');
+  if (el) el.parentElement.removeChild(el);
+};
+
+// type is 'success' or 'error'
+exports.showAlert = (type, msg) => {
+  hideAlert();
+  const markup = `<div class="alert alert--${type}">${msg}</div>`;
+  document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
+  window.setTimeout(hideAlert, 5000);
+};
+
+},{}],31:[function(require,module,exports){
 const axios = require('axios');
+const { showAlert } = require('./alerts');
 
-const commentForm = document.querySelector('#repairRequestComment');
-const btnState = document.querySelector('.btn-state');
-const btnRemove = document.querySelector('.btn-remove');
-const repairStatus = document.querySelector('#repairStatus');
+const formInfo = document.querySelectorAll('.form-info');
 
-commentForm?.addEventListener('submit', async (e) => {
-  const url = `/repairs/${window.location.pathname
-    .split('/')
-    .slice(-1)}/comments`;
+const submitBtn = document.querySelector('#submit-btn');
 
-  await axios.post(url, { text: commentForm.children[0].value });
+submitBtn.addEventListener('click', (e) => {
+  e.preventDefault();
 
-  commentForm.children[0].value = '';
-
-  location.reload();
+  handleForm();
 });
 
-btnState?.addEventListener('click', async (e) => {
-  const statuses = [
-    'pendiente',
-    'presupuestando',
-    'arreglando',
-    'arreglado',
-    'entregado',
-    'sinArreglar',
-  ];
+const handleForm = () => {
+  const repairRequest = {
+    name: formInfo[0].value,
+    phone: formInfo[1].value,
+    address: formInfo[2].value,
 
-  let status = repairStatus.innerHTML.split(' ')[0];
-  let i = statuses.indexOf(status);
-  const day = new Date(Date.now()).toLocaleString().split(',')[0];
-  let text;
+    issuedBy: formInfo[3].value,
 
-  if (i == statuses.length - 2) {
-    status = statuses[0];
-    text = `Dispositivo reingresado por reclamo el día: ${day}`;
-  } else if (i == statuses.length - 1) {
-    status = statuses[0];
-    text = `Dispositivo reingresado el día: ${day}`;
-  } else {
-    status = statuses[i + 1];
-    text = `Estatus modificado a ${status} el día ${day}`;
+    modelo: formInfo[4].value,
+    nserie: formInfo[5].value,
+    text: formInfo[6].value,
+  };
+
+  sendRepairRequest(repairRequest);
+};
+
+const sendRepairRequest = async (repairRequest) => {
+  try {
+    const res = await axios.post('/repairs', repairRequest);
+
+    if (res.data.status === 'success') {
+      formInfo.forEach((form) => (form.value = ''));
+
+      showAlert('success', 'Mensaje Enviado correctamente');
+    }
+  } catch (err) {
+    const errMsg = err.response.data.message.split(':').slice(-1);
+    showAlert('error', errMsg);
   }
+};
 
-  const url = `/repairs/${window.location.pathname.split('/').slice(-1)}`;
-
-  axios.patch(url, { status });
-
-  await axios.post(`${url}/comments`, {
-    text,
-  });
-
-  location.reload();
-});
-
-btnRemove?.addEventListener('click', async (e) => {
-  const url = `/repairs/${window.location.pathname.split('/').slice(-1)}`;
-
-  const status = 'sinArreglar';
-  axios.patch(url, { status });
-
-  const day = new Date(Date.now()).toLocaleString().split(',')[0];
-  const text = `Estatus modificado a ${status} el día ${day}`;
-  await axios.post(`${url}/comments`, {
-    text,
-  });
-
-  location.reload();
-});
-
-},{"axios":1}],31:[function(require,module,exports){
+},{"./alerts":30,"axios":1}],32:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2144,4 +2131,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[30]);
+},{}]},{},[31]);

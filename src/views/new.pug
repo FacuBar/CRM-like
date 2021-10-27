@@ -1,0 +1,52 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="shortcut icon" href="/svg/002-toolbox.svg")
+    link(rel="stylesheet" href="/css/crm.css")
+    title= `CRM || crear solicitud`
+
+  body 
+    include _header
+
+    main.layout
+      .container
+        div 
+          form.form-container
+            .contactForm
+              h2 Envianos un mensaje 
+              .formBox 
+                .inputBox.w50 
+                  label(for="name") Nombre completo*
+                  input.form-info(type="text" required spellcheck="false" id="name") 
+
+                .inputBox.w50 
+                  label(for="phone") Número de celular*
+                  input.form-info(type="text" required spellcheck="false" id="phone")
+
+                .inputBox.w50 
+                  label(for="address") Domicilio
+                  input.form-info(type="text" required spellcheck="false" id="address")
+
+                .inputBox.w50
+                  label(for="issuedBy") Issued By
+                  input.form-info(type="text" required spellcheck="false" id="issuedBy")
+
+
+                .inputBox.w50 
+                  label(for="modelo") Modelo del dispositivo*
+                  input.form-info(type="text" required spellcheck="false" id="modelo")
+
+                .inputBox.w50 
+                  label(for="nserie") Nro de serie
+                  input.form-info(type="text" required spellcheck="false" id="nserie")
+
+                .inputBox.w100 
+                    label(for="text") Problema del dispositivo*
+                    textarea.form-info(required spellcheck="false" id="text")
+
+                #submit-btn.inputBox.w100 
+                  input(type="submit" value="Send")
+  <script type="module" src="/js/form.js"></script>

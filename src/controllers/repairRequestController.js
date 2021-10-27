@@ -1,6 +1,7 @@
 const RepairRequest = require('../models/repairRequestModel');
 const AppError = require('../utils/appError');
 const wrapAsync = require('../utils/wrapAsync');
+const { automatedMessage } = require('./wspController');
 
 // '/repairs/:id'
 
@@ -19,10 +20,6 @@ exports.getAll = wrapAsync(async (req, res) => {
     { page: currentPage, limit: 5, sort: { statusId: 1, sentAt: -1 } }
   );
 
-  /**
-   * @todo
-   * replace json response for view rendering.
-   */
   res.status(200).render('crm', {
     repairRequests: documents.docs,
     totalPages: documents.pages,
@@ -60,7 +57,7 @@ exports.createNew = wrapAsync(async (req, res) => {
 
   const repairRequest = await RepairRequest.create(data);
 
-  // repairingEmail(repairRequest);
+  automatedMessage(repairRequest);
 
   res.status(200).json({
     status: 'success',

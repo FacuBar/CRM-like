@@ -10,6 +10,10 @@ router
   .get(repairRequestController.getAll)
   .post(repairRequestController.createNew);
 
+router.get('/new', (req, res, next) => {
+  res.render('new');
+});
+
 // Middleware to retrieve repairR from DB and passing it trhough req
 router.use('/:id', repairRequestController.findRepairRequest);
 
