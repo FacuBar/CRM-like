@@ -7,7 +7,10 @@ const { Client, MessageMedia } = require('whatsapp-web.js');
 let client;
 
 // Force connection to wsp
-client = new Client({ puppeteer: { headless: true }, clientId: 'example' });
+client = new Client({
+  puppeteer: { args: ['--no-sandbox', '--disable-setuid-sandbox'] },
+  clientId: 'example',
+});
 client.initialize();
 
 client.on('qr', (qr) => {
