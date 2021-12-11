@@ -1,46 +1,35 @@
 const QRCode = require('qrcode');
+const qrcode = require('qrcode-terminal');
+const fs = require('fs');
+
 const { Client, MessageMedia } = require('whatsapp-web.js');
 
 let client;
 
-// Session data from wsp web
-let sessionData = require('./session.json');
-sessionData = JSON.parse(sessionData);
-
-const puppeteerOptions = {
-  headless: true,
-  args: ['--no-sandbox'],
-};
-
 // Force connection to wsp
-// Not the mos eficient way, but the hosting chosed by
-// the customer can't make use of the better option |wsp multi-device|
-const withSession = async () => {
-  client = new Client({
-    puppeteer: puppeteerOptions,
-    session: sessionData,
+client = new Client({ puppeteer: { headless: true }, clientId: 'example' });
+client.initialize();
+
+client.on('qr', (qr) => {
+  qrcode.generate(qr, { small: true }, (qrcde) => {
+    console.log(qrcde, '\n');
   });
+  // Generate and scan this code with your phone
+});
 
-  client.on('ready', () => {
-    console.log('Client is ready!');
-  });
+client.on('ready', () => {
+  console.log('Client is ready!');
+});
 
-  client.on('auth_failure', () => {
-    console.log('It was not possible to connect to wsp, reconnecting ...');
-    client.destroy();
-    withSession();
-  });
+client.on('auth_failure', async () => {
+  console.log('It was not possible to connect to wsp, reconnecting ...');
+  client.destroy();
+});
 
-  client.on('disconnected', async () => {
-    console.log('Wsp session disconnected, reconnecting ...');
-    await client.destroy();
-    withSession();
-  });
-
-  await client.initialize();
-};
-
-withSession();
+client.on('disconnected', async () => {
+  console.log('Wsp session disconnected, reconnecting ...');
+  client.destroy();
+});
 
 // returns promise
 const sendMessage = async (number, text) => {
