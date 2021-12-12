@@ -8,7 +8,10 @@ let client;
 
 // Force connection to wsp
 client = new Client({
-  puppeteer: { headless: true },
+  puppeteer: {
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  },
   clientId: 'example',
 });
 client.initialize();
